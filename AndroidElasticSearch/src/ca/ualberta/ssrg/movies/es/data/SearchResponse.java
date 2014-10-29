@@ -6,7 +6,7 @@ public class SearchResponse<T> {
 	private int took;
 	private boolean timed_out;
 	private Shard _shards;
-	private Hits<T> hits;
+	private Hits<T> hits;	//<T> whatever is here we dont know and dont care ((GENERICS))
 	
 	public SearchResponse() {}
 

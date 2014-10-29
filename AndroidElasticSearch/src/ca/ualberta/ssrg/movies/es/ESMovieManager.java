@@ -1,3 +1,5 @@
+///this talks to elastic search
+
 package ca.ualberta.ssrg.movies.es;
 
 import java.io.BufferedReader;
@@ -28,7 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class ESMovieManager implements IMovieManager {
-
+	//these tell us where the server is
 	private static final String SEARCH_URL = "http://cmput301.softwareprocess.es:8080/testing/movie/_search";
 	private static final String RESOURCE_URL = "http://cmput301.softwareprocess.es:8080/testing/movie/";
 	private static final String TAG = "MovieSearch";
@@ -36,7 +38,7 @@ public class ESMovieManager implements IMovieManager {
 	private Gson gson;
 
 	public ESMovieManager() {
-		gson = new Gson();
+		gson = new Gson();	//help us serialize our stuff
 	}
 
 	/**
@@ -44,12 +46,12 @@ public class ESMovieManager implements IMovieManager {
 	 */
 	public Movie getMovie(int id) {
 
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(RESOURCE_URL + id);
+		HttpClient httpClient = new DefaultHttpClient();	//we have to build requests by ourselves. first want http client. << this opens a port
+		HttpGet httpGet = new HttpGet(RESOURCE_URL + id);	//the tunnel between the server and self 
 
-		HttpResponse response;
+		HttpResponse response; //what we get back when we send a msg through our tunnel through the ports << this will hold the gson object or whatever we have that we need to parse
 
-		try {
+		try { //incase no connection
 			response = httpClient.execute(httpGet);
 			SearchHit<Movie> sr = parseMovieHit(response);
 			return sr.getSource();
@@ -68,7 +70,7 @@ public class ESMovieManager implements IMovieManager {
 	 * specify fields, it searches on all the fields.
 	 */
 	public List<Movie> searchMovies(String searchString, String field) {
-		List<Movie> result = new ArrayList<Movie>();
+		List<Movie> result = new ArrayList<Movie>(); //this is the array that collects all the results of the search
 
 		// TODO: Implement search movies using ElasticSearch
 		if (searchString == null || "".equals(searchString)) {
@@ -82,16 +84,16 @@ public class ESMovieManager implements IMovieManager {
 			
 			HttpResponse response = httpClient.execute(searchRequest);
 			
-			String status = response.getStatusLine().toString();
+			String status = response.getStatusLine().toString(); //this will tell status of your search
 			Log.i(TAG, status);
 			
-			SearchResponse<Movie> esResponse = parseSearchResponse(response);
-			Hits<Movie> hits = esResponse.getHits();
+			SearchResponse<Movie> esResponse = parseSearchResponse(response); //can obtain all info from the searchResponse
+			Hits<Movie> hits = esResponse.getHits(); //since its an object now..can just use gethits.
 			
 			if (hits != null) {
 				if (hits.getHits() != null) {
 					for (SearchHit<Movie> sesr : hits.getHits()) {
-						result.add(sesr.getSource());
+						result.add(sesr.getSource());			//get the source from this because its now an object
 					}
 				}
 			}
@@ -105,13 +107,13 @@ public class ESMovieManager implements IMovieManager {
 	/**
 	 * Adds a new movie
 	 */
-	public void addMovie(Movie movie) {
+	public void addMovie(Movie movie) { //this adds movie to server
 		HttpClient httpClient = new DefaultHttpClient();
 
 		try {
 			HttpPost addRequest = new HttpPost(RESOURCE_URL + movie.getId());
 
-			StringEntity stringEntity = new StringEntity(gson.toJson(movie));
+			StringEntity stringEntity = new StringEntity(gson.toJson(movie)); 
 			addRequest.setEntity(stringEntity);
 			addRequest.setHeader("Accept", "application/json");
 
@@ -174,7 +176,7 @@ public class ESMovieManager implements IMovieManager {
 		
 		try {
 			String json = getEntityContent(response);
-			Type searchHitType = new TypeToken<SearchHit<Movie>>() {}.getType();
+			Type searchHitType = new TypeToken<SearchHit<Movie>>() {}.getType(); //grabbing type so now can use this for next line.
 			
 			SearchHit<Movie> sr = gson.fromJson(json, searchHitType);
 			return sr;
@@ -191,12 +193,12 @@ public class ESMovieManager implements IMovieManager {
 	 */
 	private SearchResponse<Movie> parseSearchResponse(HttpResponse response) throws IOException {
 		String json;
-		json = getEntityContent(response);
+		json = getEntityContent(response); //getting json from response
 
 		Type searchResponseType = new TypeToken<SearchResponse<Movie>>() {
-		}.getType();
+		}.getType(); //get this since its the object being returned
 		
-		SearchResponse<Movie> esResponse = gson.fromJson(json, searchResponseType);
+		SearchResponse<Movie> esResponse = gson.fromJson(json, searchResponseType); //after getting type ^, make it from gson.
 
 		return esResponse;
 	}
@@ -205,7 +207,8 @@ public class ESMovieManager implements IMovieManager {
 	 * Gets content from an HTTP response
 	 */
 	public String getEntityContent(HttpResponse response) throws IOException {
-		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent())); //we need a buffer incase streaming one at a time. this is waiting for all the info from the server so make sure
+		//doesn't come in chunks
 
 		StringBuffer result = new StringBuffer();
 		String line = "";
@@ -213,6 +216,6 @@ public class ESMovieManager implements IMovieManager {
 			result.append(line);
 		}
 
-		return result.toString();
+		return result.toString(); //when done ... return this.
 	}
 }

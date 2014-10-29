@@ -97,16 +97,16 @@ public class MainActivity extends Activity {
 	 * @param view
 	 */
 	public void search(View view) {
-		movies.clear();
+		movies.clear(); //going to clear the view
 
 		// TODO: Extract search query from text view
-		EditText tv = (EditText) findViewById(R.id.editText1);
+		EditText tv = (EditText) findViewById(R.id.editText1); //goign to grab the text of the search
 		String searchText = tv.getText().toString();
 
 		// TODO: Run the search thread
 		movies.clear();
-		Thread thread = new SearchThread(searchText);
-		thread.start();
+		Thread thread = new SearchThread(searchText);	//initialize a new thread
+		thread.start();			//going to start a thread from main. and the new thread is going to run()
 	}
 	
 	/**
@@ -141,9 +141,9 @@ public class MainActivity extends Activity {
 		@Override
 		public void run() {
 			movies.clear();
-			movies.addAll(movieManager.searchMovies(search, null));
-			
-			runOnUiThread(doUpdateGUIList);
+			movies.addAll(movieManager.searchMovies(search, null));		//...movie mananger is going to get the search field and do everything -- returns this is an array list of movies. goign to add them to movie list.
+			//moviemanager does everything that was needed.
+			runOnUiThread(doUpdateGUIList);	//repaint that UI main from same place. but the list has changed cuz of this thread
 		}
 	}
 

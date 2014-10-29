@@ -1,12 +1,13 @@
 package ca.ualberta.ssrg.movies.es.data;
 
-public class SearchHit<T> {
+public class SearchHit<T> { //know there is going to be an object. but not sure what it is yet.
 	private String _index;
 	private String _type;
 	private String _id;
 	private String _version;
 	private boolean found;
 	private T _source;
+	//going to have these types of attributes
 
 	public SearchHit() {
 

@@ -68,7 +68,7 @@ public class AddActivity extends Activity {
 			
 			// Give some time to get updated info
 			try {
-				Thread.sleep(500);
+				Thread.sleep(500); //this thread sleep is to make sure that can wait for a bit. should probably have a ui that says loading
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

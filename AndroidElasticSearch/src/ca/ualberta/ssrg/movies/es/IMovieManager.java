@@ -10,3 +10,4 @@ public interface IMovieManager {
 	public void addMovie(Movie movie);
 	public void deleteMovie(int id);
 }
+//should have something like this in app.
